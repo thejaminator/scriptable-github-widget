@@ -35,21 +35,28 @@ scene.centerAlignContent();
 scene.spacing = 24;
 scene.addSpacer();
 
-function addAnimal(parent, emoji, topOffset) {
+function addAnimal(parent, emoji, topOffset, vehicle) {
   const col = parent.addStack();
   col.layoutVertically();
   col.centerAlignContent();
   col.addSpacer(topOffset);
   const face = col.addText(emoji);
-  face.font = Font.systemFont(54);
+  face.font = Font.systemFont(48);
   face.centerAlignText();
+  if (vehicle) {
+    const v = col.addText(vehicle);
+    v.font = Font.systemFont(28);
+    v.centerAlignText();
+  } else {
+    col.addSpacer(32); // keep both columns the same height
+  }
   col.addSpacer(22 - topOffset);
   return col;
 }
 
-addAnimal(scene, "🐰", rabbitOffset);
+addAnimal(scene, "🐰", rabbitOffset, "🚗");
 scene.addSpacer(8);
-addAnimal(scene, "🦊", foxOffset);
+addAnimal(scene, "🦊", foxOffset, null);
 
 scene.addSpacer();
 

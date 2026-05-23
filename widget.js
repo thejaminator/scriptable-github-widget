@@ -47,7 +47,7 @@ function addAnimal(parent, emoji, topOffset, vehicle) {
   return col;
 }
 
-addAnimal(left, "🐰", rabbitOffset, "🚗");
+addAnimal(left, "🐰", rabbitOffset, null);
 addAnimal(left, "🦊", foxOffset, null);
 
 main.addSpacer();

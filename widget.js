@@ -22,7 +22,7 @@ gradient.locations = [0, 1];
 widget.backgroundGradient = gradient;
 widget.setPadding(10, 14, 10, 14);
 
-const title = widget.addText("bouncy friends ✨");
+const title = widget.addText("happi happi ✨");
 title.font = Font.semiboldRoundedSystemFont(13);
 title.textColor = TEXT_DIM;
 title.centerAlignText();

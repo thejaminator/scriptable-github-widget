@@ -1,9 +1,6 @@
-// Cute bouncy rabbit + fox widget, designed for the Medium (2×4) size.
-//
-// iOS widgets render once per system refresh (every ~5–15 min), so this isn't
-// true animation — instead, each refresh picks a "frame" from a bounce cycle,
-// and the rabbit + fox land in different positions every time you glance.
-// Rabbit and fox are offset by half a cycle so when one's up, the other's down.
+// Medium (2×4) widget: bunny + fox bouncing on the left, bubble tea on the right.
+// iOS widgets are static snapshots — "animation" is a frame index that advances
+// per refresh, so each refresh shows a different bounce position.
 
 const FRAMES = [22, 14, 6, 0, 0, 6, 14, 22]; // top-spacer pts; smaller = higher
 const tick = Math.floor(Date.now() / 1500) % FRAMES.length;
@@ -12,7 +9,6 @@ const foxOffset = FRAMES[(tick + Math.floor(FRAMES.length / 2)) % FRAMES.length]
 
 const SKY_TOP = new Color("#fde4f2");
 const SKY_BOTTOM = new Color("#ffd6a5");
-const GRASS = new Color("#a8e6a3");
 const TEXT_DIM = new Color("#8a5a7a");
 
 const widget = new ListWidget();
@@ -20,20 +16,17 @@ const gradient = new LinearGradient();
 gradient.colors = [SKY_TOP, SKY_BOTTOM];
 gradient.locations = [0, 1];
 widget.backgroundGradient = gradient;
-widget.setPadding(10, 14, 10, 14);
+widget.setPadding(10, 12, 10, 12);
 
-const title = widget.addText("happi happi ✨");
-title.font = Font.semiboldRoundedSystemFont(13);
-title.textColor = TEXT_DIM;
-title.centerAlignText();
+const main = widget.addStack();
+main.layoutHorizontally();
+main.centerAlignContent();
 
-widget.addSpacer(4);
-
-const scene = widget.addStack();
-scene.layoutHorizontally();
-scene.centerAlignContent();
-scene.spacing = 24;
-scene.addSpacer();
+// LEFT: bouncing animals
+const left = main.addStack();
+left.layoutHorizontally();
+left.centerAlignContent();
+left.spacing = 4;
 
 function addAnimal(parent, emoji, topOffset, vehicle) {
   const col = parent.addStack();
@@ -41,43 +34,47 @@ function addAnimal(parent, emoji, topOffset, vehicle) {
   col.centerAlignContent();
   col.addSpacer(topOffset);
   const face = col.addText(emoji);
-  face.font = Font.systemFont(48);
+  face.font = Font.systemFont(40);
   face.centerAlignText();
   if (vehicle) {
     const v = col.addText(vehicle);
-    v.font = Font.systemFont(28);
+    v.font = Font.systemFont(22);
     v.centerAlignText();
   } else {
-    col.addSpacer(32); // keep both columns the same height
+    col.addSpacer(26);
   }
   col.addSpacer(22 - topOffset);
   return col;
 }
 
-addAnimal(scene, "🐰", rabbitOffset, "🚗");
-scene.addSpacer(8);
-addAnimal(scene, "🦊", foxOffset, null);
+addAnimal(left, "🐰", rabbitOffset, "🚗");
+addAnimal(left, "🦊", foxOffset, null);
 
-scene.addSpacer();
+main.addSpacer();
 
-// "ground" line
-const ground = widget.addStack();
-ground.layoutHorizontally();
-ground.backgroundColor = GRASS;
-ground.size = new Size(0, 4);
-ground.cornerRadius = 2;
-ground.addSpacer();
+// RIGHT: bubble tea
+const right = main.addStack();
+right.layoutVertically();
+right.centerAlignContent();
 
-widget.addSpacer(2);
+const heading = right.addText("1000 bubble tea a day");
+heading.font = Font.boldRoundedSystemFont(13);
+heading.textColor = TEXT_DIM;
+heading.centerAlignText();
+heading.minimumScaleFactor = 0.7;
 
-const stamp = widget.addText(new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }));
-stamp.font = Font.systemFont(9);
-stamp.textColor = TEXT_DIM;
-stamp.centerAlignText();
+right.addSpacer(4);
+
+const teaRows = ["🧋🧋🧋🧋🧋", "🧋🧋🧋🧋🧋", "🧋🧋🧋🧋🧋"];
+for (const row of teaRows) {
+  const t = right.addText(row);
+  t.font = Font.systemFont(16);
+  t.centerAlignText();
+  t.minimumScaleFactor = 0.5;
+}
 
 if (config.runsInWidget) {
   Script.setWidget(widget);
-  // hint to iOS that we'd like a refresh sooner; iOS may ignore for battery
   widget.refreshAfterDate = new Date(Date.now() + 60 * 1000);
 } else {
   await widget.presentMedium();
